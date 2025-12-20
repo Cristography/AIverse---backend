@@ -2,6 +2,7 @@ import uuid
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.apps import apps
 
 class Comment(models.Model):
     """
@@ -67,6 +68,29 @@ class Bookmark(models.Model):
     def clean(self):
         if self.bookmarkable_type not in [1, 2, 3, 4]:
             raise ValidationError('Invalid bookmarkable_type')
+
+    def get_content_object(self):
+        """Resolve and return the actual bookmarked object instance (or None)."""
+        try:
+            model_map = {
+                1: 'prompts.Prompt',
+                2: 'content.Tool',
+                3: 'content.News',
+                4: 'content.Blog',
+            }
+            model_label = model_map.get(self.bookmarkable_type)
+            if not model_label:
+                return None
+            Model = apps.get_model(model_label)
+            if not Model:
+                return None
+            return Model.objects.filter(pk=self.bookmarkable_id).first()
+        except Exception:
+            return None
+
+    @property
+    def content_object(self):
+        return self.get_content_object()
 
 class Vote(models.Model):
     """

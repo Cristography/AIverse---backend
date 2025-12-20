@@ -1,28 +1,20 @@
-"""
-Django settings for prompt_platform project.
-"""
-
 from pathlib import Path
 from datetime import timedelta
 import os
 from decouple import config, Csv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
     'django-insecure-dev-key-replace-in-production-x7k9@m!n$p2q3r4s5t6u7v8w9x0y1z2'
 )
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get(
     'ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
-# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -31,14 +23,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Third party apps
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'django_filters',
 
-    # Local apps
     'accounts',
     'prompts',
     'content',
@@ -77,9 +67,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
 """ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -91,7 +78,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
     }
 } """
 
-# Replace your DATABASES config with:
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -99,7 +85,6 @@ DATABASES = {
     }
 }
 
-# If PostgreSQL is not available, fallback to SQLite for development
 if DEBUG and os.environ.get('USE_SQLITE', 'False') == 'True':
     DATABASES = {
         'default': {
@@ -108,11 +93,7 @@ if DEBUG and os.environ.get('USE_SQLITE', 'False') == 'True':
         }
     }
 
-# Custom User Model
 AUTH_USER_MODEL = 'accounts.User'
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -132,9 +113,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -143,26 +121,15 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR /
                     'static'] if (BASE_DIR / 'static').exists() else []
 
-# Media files (User uploads)
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# ============================================================================
-# REST FRAMEWORK CONFIGURATION
-# ============================================================================
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -186,10 +153,6 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S',
     'DATE_FORMAT': '%Y-%m-%d',
 }
-
-# ============================================================================
-# JWT CONFIGURATION
-# ============================================================================
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
@@ -219,10 +182,6 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 }
 
-# ============================================================================
-# CORS CONFIGURATION (for React frontend)
-# ============================================================================
-
 CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
     'http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173'
@@ -251,12 +210,7 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
-# ============================================================================
-# SECURITY SETTINGS
-# ============================================================================
-
 if not DEBUG:
-    # Production security settings
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -266,10 +220,6 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     X_FRAME_OPTIONS = 'DENY'
-
-# ============================================================================
-# LOGGING CONFIGURATION
-# ============================================================================
 
 LOGGING = {
     'version': 1,
@@ -316,14 +266,9 @@ LOGGING = {
     },
 }
 
-# Create logs directory if it doesn't exist
 (BASE_DIR / 'logs').mkdir(exist_ok=True)
 
-# ============================================================================
-# EMAIL CONFIGURATION (Optional - for password reset, etc.)
-# ============================================================================
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For development
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  
 
 if not DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -334,11 +279,7 @@ if not DEBUG:
     EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
     DEFAULT_FROM_EMAIL = os.environ.get(
         'DEFAULT_FROM_EMAIL', 'noreply@promptplatform.com')
-
-# ============================================================================
-# CACHE CONFIGURATION (Optional - for better performance)
-# ============================================================================
-
+    
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
@@ -346,51 +287,11 @@ CACHES = {
     }
 }
 
-# For production with Redis:
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-#         'LOCATION': os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379/1'),
-#     }
-# }
-
-# ============================================================================
-# FILE UPLOAD SETTINGS
-# ============================================================================
-
-# Maximum upload size (10MB)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10485760  # 10MB
 
-# Allowed file extensions for media assets
 ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
 ALLOWED_AUDIO_EXTENSIONS = ['.mp3', '.wav', '.ogg']
-
-# ============================================================================
-# AWS S3 CONFIGURATION (Optional - for production media storage)
-# ============================================================================
-
-USE_S3 = os.environ.get('USE_S3', 'False') == 'True'
-
-if USE_S3:
-    # AWS settings
-    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME', 'us-east-1')
-    AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
-
-    # Static and media files
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
-    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/media/'
-
-    # Storage backends
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-
-# ============================================================================
-# ADMIN CONFIGURATION
-# ============================================================================
 
 ADMIN_SITE_HEADER = 'Prompt Platform Admin'
 ADMIN_SITE_TITLE = 'Prompt Platform Admin Portal'
