@@ -36,6 +36,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        # Add user data to token response
+        
         data['user'] = UserSerializer(self.user).data
         return data

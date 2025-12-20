@@ -17,8 +17,11 @@ class CommentAdmin(admin.ModelAdmin):
 class VoteAdmin(admin.ModelAdmin):
     list_display = ['user', 'votable_type', 'value', 'created_at']
     list_filter = ['votable_type', 'value', 'created_at']
-    raw_id_fields = ['user']
+    raw_id_fields = ['user','prompts','tool','news','blog']
 
+    def votable_type_label(self, obj):
+        return obj.get_votable_type_display()
+    votable_type_label.short_description = 'Votable Type'
 
 @admin.register(Bookmark)
 class BookmarkAdmin(admin.ModelAdmin):

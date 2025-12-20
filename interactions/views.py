@@ -7,7 +7,6 @@ from .serializers import (
     CommentSerializer, CommentCreateUpdateSerializer,
     VoteSerializer, BookmarkSerializer
 )
-
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.select_related('author').all()
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -27,25 +26,37 @@ class CommentViewSet(viewsets.ModelViewSet):
                 commentable_type=commentable_type,
                 commentable_id=commentable_id
             )
-        
         return queryset
     
-    def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+    def create(self, request, *args, **kwargs):
+        print(f"🔍 USER: {request.user.username if request.user.is_authenticated else 'AnonymousUser'}")
+        print(f"🔍 DATA: {request.data}")
+        
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            try:
+                comment = serializer.save(author=request.user)
+                print(f"✅ CREATED COMMENT ID: {comment.id}")
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=201, headers=headers)
+            except Exception as e:
+                print(f"❌ SAVE ERROR: {e}")
+                return Response({"error": str(e)}, status=400)
+        print(f"❌ ERRORS: {serializer.errors}")
+        return Response(serializer.errors, status=400)
     
     def perform_update(self, serializer):
-        # Only author can update their comment
         if serializer.instance.author != self.request.user:
             raise PermissionError("You can only edit your own comments")
         serializer.save()
     
     def perform_destroy(self, instance):
-        # Author or moderator can delete
         user = self.request.user
         if instance.author == user or user.is_moderator or user.is_superuser:
             instance.delete()
         else:
             raise PermissionError("You can only delete your own comments")
+
 
 class VoteViewSet(viewsets.ModelViewSet):
     queryset = Vote.objects.all()
@@ -61,7 +72,7 @@ class VoteViewSet(viewsets.ModelViewSet):
         votable_id = request.data.get('votable_id')
         value = request.data.get('value')
         
-        # Check if vote exists
+        
         vote, created = Vote.objects.update_or_create(
             user=request.user,
             votable_type=votable_type,

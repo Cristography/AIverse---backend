@@ -34,7 +34,7 @@ class Blog(models.Model):
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='blog_posts')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    views = models.IntegerField(default=0)  # This must be present for increment operation
+    views = models.IntegerField(default=0)  
 
     class Meta:
         db_table = 'blogs'

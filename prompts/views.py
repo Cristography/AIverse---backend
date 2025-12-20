@@ -27,7 +27,7 @@ class PromptViewSet(viewsets.ModelViewSet):
     
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        # Increment views
+        
         instance.views += 1
         instance.save(update_fields=['views'])
         serializer = self.get_serializer(instance)
@@ -55,7 +55,7 @@ class PromptViewSet(viewsets.ModelViewSet):
     
     @action(detail=True, methods=['post'])
     def increment_view(self, request, slug=None):
-        prompt = self.get_object()  # Will 404 if slug not found
+        prompt = self.get_object()  
         prompt.views = models.F('views') + 1
         prompt.save(update_fields=['views'])
         prompt.refresh_from_db()

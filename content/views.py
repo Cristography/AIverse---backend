@@ -38,7 +38,7 @@ class BlogViewSet(viewsets.ModelViewSet):
             blog = self.get_object()
             blog.views = models.F('views') + 1
             blog.save(update_fields=['views'])
-            blog.refresh_from_db()  # Fetch updated value
+            blog.refresh_from_db()  
             return Response({'views': blog.views}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

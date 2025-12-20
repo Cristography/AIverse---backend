@@ -35,9 +35,7 @@ class Comment(models.Model):
     def __str__(self):
         return f"Comment by {self.author.username} on {self.get_commentable_type_display()}"
     
-    def clean(self):
-        if self.commentable_type not in [1, 2, 3, 4]:
-            raise ValidationError('Invalid commentable_type')
+
 
 class Bookmark(models.Model):
     """
@@ -93,6 +91,11 @@ class Vote(models.Model):
     value = models.IntegerField(choices=VOTE_VALUES)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    prompts = models.ForeignKey('prompts.Prompt', null=True, blank=True, on_delete=models.CASCADE)
+    tool = models.ForeignKey('content.Tool', null=True, blank=True, on_delete=models.CASCADE)
+    news = models.ForeignKey('content.News', null=True, blank=True, on_delete=models.CASCADE)
+    blog = models.ForeignKey('content.Blog', null=True, blank=True, on_delete=models.CASCADE)
     
     class Meta:
         db_table = 'votes'

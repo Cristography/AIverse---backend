@@ -36,14 +36,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=100, blank=True)
     bio = models.TextField(blank=True)
     
-    # Role flags
+   
     is_moderator = models.BooleanField(default=False, help_text='Can create blogs, news, tools, tags and moderate content')
     is_pro = models.BooleanField(default=False, help_text='Has access to premium features')
     
-    # Django required fields
+    
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)  # Can access admin panel
-    is_superuser = models.BooleanField(default=False)  # Has all permissions
+    is_staff = models.BooleanField(default=False)  
+    is_superuser = models.BooleanField(default=False)  
     
     date_joined = models.DateTimeField(auto_now_add=True)
     

@@ -55,7 +55,7 @@ class PromptCreateUpdateSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags', [])
         prompt = Prompt.objects.create(**validated_data)
         
-        # Handle tags
+        
         for tag_name in tags_data:
             tag, _ = Tag.objects.get_or_create(name=tag_name.lower())
             Taggable.objects.create(tag=tag, taggable_type=1, taggable_id=prompt.id)
@@ -65,12 +65,12 @@ class PromptCreateUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         tags_data = validated_data.pop('tags', None)
         
-        # Update prompt fields
+        
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
         
-        # Update tags if provided
+        
         if tags_data is not None:
             Taggable.objects.filter(taggable_type=1, taggable_id=instance.id).delete()
             for tag_name in tags_data:
